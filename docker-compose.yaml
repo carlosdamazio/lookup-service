@@ -1,0 +1,26 @@
+version: '3.1'
+services:
+  database:
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    image: postgres:15.0-alpine3.16
+    environment:
+      POSTGRES_PASSWORD: lookup
+      PGDATA: /data/postgres
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+  lookupsvc:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: sh -c 'while ! nc -z database 5432; do sleep 1; done; lookup'
+    env_file:
+      - ./env/svc.env
+    depends_on:
+      - database
+    ports:
+      - "3000:3000"

@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "lookup-service.fullname" . }}
+  labels:
+    {{- include "lookup-service.labels" . | nindent 4 }}
+data:
+  APP_LOG_LEVEL: {{ .Values.lookup.logLevel | quote }}
+  APP_VERSION: {{ .Chart.AppVersion }}
+  APP_MANAGED_BY: {{ .Values.lookup.managedBy | quote }}
